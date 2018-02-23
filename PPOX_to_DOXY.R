@@ -1,4 +1,4 @@
-DOXY_to_PPOX <- function ( PRES_DOXY, TEMP_DOXY, PSAL_DOXY, PPOX_DOXY){
+PPOX_to_DOXY <- function ( PRES_DOXY, TEMP_DOXY, PSAL_DOXY, PPOX_DOXY){
 
 # Based on Henry Bittig work 
 # Here we change 
@@ -34,7 +34,7 @@ sca_T=log((298.15-TEMP_DOXY)/(273.15+TEMP_DOXY))
 TCorr <- 44.6596*(exp(2.00907+3.22014*sca_T+4.05010*sca_T^2+4.94457*sca_T^3-2.56847e-1*sca_T^4+3.88767*sca_T^5))
 Scorr <- exp(PSAL_DOXY*(-6.24523e-3-7.37614e-3*sca_T-1.03410e-3*sca_T^2-8.17083e-3*sca_T^3)-4.88682e-7*PSAL_DOXY^2)
 
-DOXY=PPOX_DOXY*(TCorr*Scorr)/(exp(Vm*PRES_DOXY/(R*(TEMP_DOXY+273.15)))*(xO2*(atm_press-pH2Osatsal))) # (DOXY en micromol / l)
+DOXY=PPOX*(TCorr*Scorr)/(exp(Vm*PRES_DOXY/(R*(TEMP_DOXY+273.15)))*(xO2*(atm_press-pH2Osatsal))) # (DOXY en micromol / l)
 
 DOXY_DOXY=DOXY*1000/swRho_DOXY  # DOXY en micromol / kg 
 
