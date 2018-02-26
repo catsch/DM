@@ -79,9 +79,9 @@ PPOX_WOA_surf=WOA_to_PPOX(LATITUDE,LONGITUDE)
 #### 4.c Calculate the correction factor
 
 PPOX_CORR=PPOX_WOA_surf/PPOX_DOXY[1]
-
+### The correction factor should be calculated for all profiles of the float series...
 #### 4.d Apply the factor to the whole PPOX_DOXY profile
-
+### ...and then the mean factor of the entire series applied to the individual float profiles, not profile-by-profile
 PPOX_ADJUSTED=PPOX_DOXY*PPOX_CORR
  
 DOXY_ADJUSTED=PPOX_to_DOXY(DOXY$PRES, TEMP_DOXY, PSAL_DOXY, PPOX_ADJUSTED)
