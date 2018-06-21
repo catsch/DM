@@ -12,17 +12,25 @@ source("./read_CTD.R")
 source("./read_BFILE_DOXY.R")
 source("./DOXY_to_PPOX.R")
 source("./WOA_to_PPOX.R")
+source("./WOA_to_PPOX_MONTH.R")
 source("./PPOX_to_DOXY.R")
 
 #############################################################################################
 # 1. OPEN the files
 #############################################################################################
 ###### to change to read all files on order to perform DM in it 
+
+uf=commandArgs()
+
+file_in_B <- uf[2]
+
+file_in_C <- uf[3]
+
 # File B
-file_in_B="/home/schmechtig/TRAITEMENT_FLOTTEUR/ANTOINE/DATA_MANAGEMENT/RT/DATA/6902701/BR6902701_003.nc"
+# file_in_B="/home/schmechtig/TRAITEMENT_FLOTTEUR/ANTOINE/DATA_MANAGEMENT/RT/DATA/6902701/BR6902701_003.nc"
 
 # File C (could be D or R)
-file_in_C="/home/schmechtig/TRAITEMENT_FLOTTEUR/ANTOINE/DATA_MANAGEMENT/RT/DATA/6902701/R6902701_003.nc"
+# file_in_C="/home/schmechtig/TRAITEMENT_FLOTTEUR/ANTOINE/DATA_MANAGEMENT/RT/DATA/6902701/R6902701_003.nc"
 
 # Open the file 
 filenc_B=nc_open(file_in_B,readunlim=FALSE,write=FALSE)
@@ -48,6 +56,14 @@ LATITUDE=LATITUDE[!duplicated(LATITUDE)]
 LONGITUDE=ncvar_get(filenc_B,"LONGITUDE")
 
 LONGITUDE=LONGITUDE[!duplicated(LONGITUDE)]
+
+JULD=ncvar_get(filenc_B,"JULD")
+
+JULD=JULD[!duplicated(JULD)]
+
+MONTH=format(as.Date(JULD, origin=as.Date("1950-01-01")),format="%m")
+
+print(MONTH)
 
 ##################################################
 #### 3. Get BGC data from the B File
@@ -76,12 +92,18 @@ PPOX_DOXY=DOXY_to_PPOX(DOXY$PRES, TEMP_DOXY, PSAL_DOXY, DOXY$DOXY)
 
 PPOX_WOA_surf=WOA_to_PPOX(LATITUDE,LONGITUDE)
 
+# and with month from climatology
+
+PPOX_WOA_surf_month=WOA_to_PPOX_MONTH(LATITUDE,LONGITUDE, MONTH)
+
 #### 4.c Calculate the correction factor
 
 PPOX_CORR=PPOX_WOA_surf/PPOX_DOXY[1]
-### The correction factor should be calculated for all profiles of the float series...
+
+PPOX_CORR_MONTH=PPOX_WOA_surf_month/PPOX_DOXY[1]
+
 #### 4.d Apply the factor to the whole PPOX_DOXY profile
-### ...and then the mean factor of the entire series applied to the individual float profiles, not profile-by-profile
+
 PPOX_ADJUSTED=PPOX_DOXY*PPOX_CORR
  
 DOXY_ADJUSTED=PPOX_to_DOXY(DOXY$PRES, TEMP_DOXY, PSAL_DOXY, PPOX_ADJUSTED)
@@ -89,7 +111,7 @@ DOXY_ADJUSTED=PPOX_to_DOXY(DOXY$PRES, TEMP_DOXY, PSAL_DOXY, PPOX_ADJUSTED)
 #####################################################
 #### 4. Fill the nc file 
 #####################################################
-
-
-
+sink('resultats_fact_107c.txt',append=TRUE)
+print(c(JULD,PPOX_CORR,PPOX_CORR_MONTH))
+sink()
 
