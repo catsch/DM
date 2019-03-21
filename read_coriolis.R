@@ -48,9 +48,9 @@ DOXY=read_BFILE_DOXY(filenc_B)
 ################################################### 
 
 # We interpolate CTD DATA to get TEMP and PSAL a DOXY$PRES LEVEL
-TEMP_DOXY <- approx(DOXY$PRES, CTD$TEMP, CTD$PRES, rule=2)$y
+TEMP_DOXY <- approx(CTD$PRES, CTD$TEMP, DOXY$PRES, rule=2)$y
 
-PSAL_DOXY  <- approx(DOXY$PRES, CTD$PSAL, CTD$PRES, rule=2)$y
+PSAL_DOXY  <- approx(CTD$PRES, CTD$PSAL, DOXY$PRES, rule=2)$y
 
 # calculate PPOX_DOXY in mbar from DOXY in micromol/kg
 PPOX_DOXY=DOXY_to_PPOX(DOXY$PRES, TEMP_DOXY, PSAL_DOXY, DOXY$DOXY)
